@@ -67,13 +67,14 @@
 <body>
   <div class="container">
     <h1>🧪 Test Suite: Automated Invoice Generator</h1>
-    <p style="color: #94a3b8; margin-bottom: 1rem;">Verifying Calculations, Raw Text Parser, PDF Filename Format &amp; Email Draft Generation</p>
+    <p style="color: #94a3b8; margin-bottom: 1rem;">Verifying Calculations, Raw Text Parser, PDF Filename Format, Email Drafts &amp; Demo Limits</p>
     
     <div id="summary" class="summary">Running tests...</div>
     <div id="results"></div>
   </div>
 
   <!-- Load Modules -->
+  <script src="../js/demo.js"></script>
   <script src="../js/parser.js"></script>
   <script src="../js/invoice.js"></script>
   <script src="../js/email.js"></script>
@@ -195,6 +196,27 @@
     StorageManager.saveInvoice(new InvoiceModel({ invoiceMeta: { invoiceNumber: 'INV-0001' } }));
     const next2 = StorageManager.getNextInvoiceNumber();
     assert('Storage: Next sequential invoice number is INV-0002', next2 === 'INV-0002', `Got: ${next2}`);
+
+    // --- TEST 6: Demo Limit & Developer Bypass Tests ---
+    localStorage.clear();
+    DemoManager.disableDevMode();
+
+    assert('Demo: Initial usage count is 0', DemoManager.getUsageCount() === 0, `Got: ${DemoManager.getUsageCount()}`);
+    assert('Demo: Limit not reached initially', DemoManager.isLimitReached() === false);
+
+    DemoManager.incrementUsage();
+    assert('Demo: Usage count is 1 after 1st generation', DemoManager.getUsageCount() === 1, `Got: ${DemoManager.getUsageCount()}`);
+    assert('Demo: 1 invoice remaining', DemoManager.getRemainingCount() === 1);
+
+    DemoManager.incrementUsage();
+    assert('Demo: Usage count is 2 after 2nd generation', DemoManager.getUsageCount() === 2, `Got: ${DemoManager.getUsageCount()}`);
+    assert('Demo: Limit IS reached after 2nd generation', DemoManager.isLimitReached() === true);
+
+    DemoManager.enableDevMode();
+    assert('Demo: Developer mode bypasses limit', DemoManager.isAdmin() === true && DemoManager.isLimitReached() === false);
+
+    DemoManager.disableDevMode();
+    assert('Demo: Visitor mode restored and limit blocked', DemoManager.isLimitReached() === true);
 
     // Update Summary
     summaryContainer.textContent = `Completed: ${passed + failed} Tests | ${passed} Passed | ${failed} Failed`;

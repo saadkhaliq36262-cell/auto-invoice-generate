@@ -1,9 +1,22 @@
 /**
  * Node.js CLI Test Runner for Invoice Generator Modules
  */
+
+// Mock localStorage for Node environment if not present
+if (typeof localStorage === 'undefined') {
+  let store = {};
+  global.localStorage = {
+    getItem: (k) => store[k] !== undefined ? store[k] : null,
+    setItem: (k, v) => { store[k] = String(v); },
+    removeItem: (k) => { delete store[k]; },
+    clear: () => { store = {}; }
+  };
+}
+
 const { RawInvoiceParser } = require('../js/parser.js');
 const { InvoiceModel, CURRENCIES } = require('../js/invoice.js');
 const { EmailDraftManager } = require('../js/email.js');
+const { DemoManager } = require('../js/demo.js');
 
 let passed = 0;
 let failed = 0;
@@ -132,6 +145,42 @@ assert('Parser Test 2: Client email extracted', p2.customer.email === 'john.doe@
 assert('Parser Test 2: Extracted 2 services', p2.items.length === 2, `Got: ${p2.items.length}`);
 assert('Parser Test 2: Service 1 qty is 3 and price is 400', p2.items[0].quantity === 3 && p2.items[0].price === 400, `Got: ${JSON.stringify(p2.items[0])}`);
 assert('Parser Test 2: Percentage discount parsed', p2.discount.value === 5 && p2.discount.isPercentage === true, `Got: ${JSON.stringify(p2.discount)}`);
+
+// 5. Demo Limit & Developer Bypass Tests
+localStorage.clear();
+DemoManager.disableDevMode();
+
+assert('Demo: Initial usage count is 0', DemoManager.getUsageCount() === 0, `Got: ${DemoManager.getUsageCount()}`);
+assert('Demo: Limit not reached initially', DemoManager.isLimitReached() === false);
+
+// 1st generation
+DemoManager.incrementUsage();
+assert('Demo: Usage count is 1 after 1st generation', DemoManager.getUsageCount() === 1, `Got: ${DemoManager.getUsageCount()}`);
+assert('Demo: Limit not reached after 1st generation', DemoManager.isLimitReached() === false);
+assert('Demo: 1 invoice remaining', DemoManager.getRemainingCount() === 1);
+
+// 2nd generation
+DemoManager.incrementUsage();
+assert('Demo: Usage count is 2 after 2nd generation', DemoManager.getUsageCount() === 2, `Got: ${DemoManager.getUsageCount()}`);
+assert('Demo: Limit IS reached after 2nd generation', DemoManager.isLimitReached() === true);
+assert('Demo: 0 invoices remaining', DemoManager.getRemainingCount() === 0);
+
+// Refresh simulation (reading usage does NOT increment)
+const readAgain = DemoManager.getUsageCount();
+assert('Demo: Reading state (page refresh) does not increment count', readAgain === 2, `Got: ${readAgain}`);
+assert('Demo: Limit remains strictly enforced on refresh', DemoManager.isLimitReached() === true);
+
+// Developer / Admin Bypass Test
+DemoManager.enableDevMode();
+assert('Demo: Developer mode is active', DemoManager.isAdmin() === true);
+assert('Demo: Limit is bypassed for developer even when count >= 2', DemoManager.isLimitReached() === false);
+DemoManager.incrementUsage(); // Admin usage does not increment demo count
+assert('Demo: Admin usage does not increment visitor counter', DemoManager.getUsageCount() === 2);
+
+// Re-disable dev mode to verify visitor limit is still intact
+DemoManager.disableDevMode();
+assert('Demo: Visitor mode restored', DemoManager.isAdmin() === false);
+assert('Demo: Visitor remains limit-blocked at 2', DemoManager.isLimitReached() === true);
 
 console.log(`\n========================================`);
 console.log(`Test Execution Complete: ${passed} Passed, ${failed} Failed`);

@@ -986,6 +986,94 @@ body {
   }
 }
 
+/* Demo Limit Badge & UI Controls */
+.demo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.15);
+  transition: all 0.2s ease;
+}
+
+.demo-pill-admin {
+  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  color: #5b21b6;
+  border-color: #c4b5fd;
+}
+
+.demo-pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+  animation: pulseDot 2s infinite;
+}
+
+.demo-pill-admin .demo-pill-dot {
+  background-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.75; }
+}
+
+.demo-limit-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1.25rem;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  color: #2563eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.15);
+}
+
+.btn-fiverr-cta {
+  background: linear-gradient(135deg, #1dbf73 0%, #109655 100%);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(29, 191, 115, 0.35);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-fiverr-cta:hover {
+  background: linear-gradient(135deg, #16a362 0%, #0d7c45 100%);
+  box-shadow: 0 6px 20px rgba(29, 191, 115, 0.45);
+  transform: translateY(-2px);
+}
+
+.demo-exhausted-banner {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #92400e;
+}
+
 /* Print Stylesheet */
 @media print {
   body {

@@ -122,6 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initializeApp() {
+  // Initialize Demo Limit & Developer bypass check
+  if (typeof DemoManager !== 'undefined') {
+    DemoManager.init();
+  }
+
   // Check for saved sender company defaults
   const savedCompany = StorageManager.getCompanyProfile();
   if (savedCompany) {
@@ -139,6 +144,7 @@ function initializeApp() {
   // Initial live preview render
   updatePreview();
   updateHistoryBadge();
+  updateDemoBadge();
 }
 
 /**
@@ -235,7 +241,15 @@ function bindEventListeners() {
 
   // Print Invoice
   document.getElementById('btnPrintInvoice').addEventListener('click', () => {
+    if (typeof DemoManager !== 'undefined' && DemoManager.isLimitReached()) {
+      openModal('demoLimitModal');
+      return;
+    }
     PDFExporter.printInvoice();
+    if (typeof DemoManager !== 'undefined') {
+      DemoManager.incrementUsage();
+      updateDemoBadge();
+    }
   });
 
   // Download PDF
@@ -676,6 +690,12 @@ function updatePreview() {
  * Handle Download PDF Action
  */
 async function handleDownloadPDF() {
+  // Check Demo Limit
+  if (typeof DemoManager !== 'undefined' && DemoManager.isLimitReached()) {
+    openModal('demoLimitModal');
+    return;
+  }
+
   const canvasElement = document.getElementById('invoicePreviewCanvas');
   const btn = document.getElementById('btnDownloadPDF');
   const originalText = btn.innerHTML;
@@ -692,6 +712,15 @@ async function handleDownloadPDF() {
       showToast(progress.message, 'info');
     });
 
+    // Increment demo usage for visitors
+    if (typeof DemoManager !== 'undefined') {
+      DemoManager.incrementUsage();
+      updateDemoBadge();
+      if (DemoManager.isLimitReached()) {
+        showToast('Demo limit reached (2/2 invoices generated)', 'info');
+      }
+    }
+
     showToast(`✅ Downloaded: ${downloadedName}`, 'success');
   } catch (err) {
     console.error(err);
@@ -700,6 +729,31 @@ async function handleDownloadPDF() {
   } finally {
     btn.disabled = false;
     btn.innerHTML = originalText;
+  }
+}
+
+/**
+ * Update the Demo Limit UI Badge
+ */
+function updateDemoBadge() {
+  const badge = document.getElementById('demoBadge');
+  const badgeText = document.getElementById('demoBadgeText');
+  if (!badge || !badgeText || typeof DemoManager === 'undefined') return;
+
+  if (DemoManager.isAdmin()) {
+    badge.className = 'demo-pill demo-pill-admin';
+    badge.title = 'Developer Unlimited Access';
+    badgeText.textContent = '⚡ Pro Developer Access';
+  } else {
+    badge.className = 'demo-pill';
+    const count = DemoManager.getUsageCount();
+    if (count >= DemoManager.MAX_DEMO_INVOICES) {
+      badgeText.textContent = 'Free Demo — 2 Invoices (2/2 used)';
+      badge.title = 'Demo limit reached. Contact for custom invoice system.';
+    } else {
+      badgeText.textContent = `Free Demo — 2 Invoices (${count}/2 used)`;
+      badge.title = `Free demo mode: ${DemoManager.MAX_DEMO_INVOICES - count} free generation(s) remaining`;
+    }
   }
 }
 
