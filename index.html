@@ -477,7 +477,7 @@ Routing / SWIFT: SVBUS6SXXX</p>
           <div>
             <strong>Manual Attachment Required:</strong>
             <p style="margin-top: 0.2rem;">
-              Click below to open in your email client. Remember to manually attach your downloaded PDF (<code id="modalFilenameDisplay">Invoice-INV-0001-Ali-Khan.pdf</code>) before sending.
+              Click <strong>"Open in Gmail"</strong> below to create your pre-filled draft directly in Gmail. Remember to manually attach your downloaded PDF (<code id="modalFilenameDisplay">Invoice-INV-0001-Ali-Khan.pdf</code>) before sending.
             </p>
           </div>
         </div>
@@ -510,8 +510,9 @@ Routing / SWIFT: SVBUS6SXXX</p>
       <div class="modal-footer" style="justify-content: space-between;">
         <button id="btnCopyFullEmail" class="btn btn-secondary">📋 Copy Full Draft</button>
         <div style="display: flex; gap: 0.5rem;">
-          <button id="btnOpenGmail" class="btn btn-accent">📧 Open in Gmail</button>
-          <button id="btnOpenDefaultMail" class="btn btn-primary">✉️ Default Mail Client</button>
+          <a id="btnOpenGmail" href="#" target="_blank" rel="noopener" class="btn btn-gmail" title="Open and create pre-filled email draft in Gmail">
+            📧 Open in Gmail (Create Full Draft)
+          </a>
         </div>
       </div>
     </div>

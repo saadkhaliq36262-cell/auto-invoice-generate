@@ -280,16 +280,31 @@ function bindEventListeners() {
   });
 
   // Email Draft Modal Actions
-  document.getElementById('btnOpenGmail').addEventListener('click', () => {
-    const draft = currentInvoice.generateEmailDraft();
-    EmailDraftManager.openGmailCompose(draft);
-    showToast('Opened Gmail compose window', 'info');
-  });
+  const btnOpenGmail = document.getElementById('btnOpenGmail');
+  if (btnOpenGmail) {
+    btnOpenGmail.addEventListener('click', () => {
+      const recipient = (document.getElementById('draftRecipient').value || currentInvoice.customer.email || '').trim();
+      const subject = (document.getElementById('draftSubject').value || '').trim();
+      const body = (document.getElementById('draftBody').value || '').trim();
+      const gmailUrl = EmailDraftManager.getGmailComposeUrl({ recipient, subject, body });
+      btnOpenGmail.href = gmailUrl;
+      showToast('Opening Gmail with full draft...', 'info');
+    });
+  }
 
-  document.getElementById('btnOpenDefaultMail').addEventListener('click', () => {
-    const draft = currentInvoice.generateEmailDraft();
-    EmailDraftManager.openDefaultMailClient(draft);
-    showToast('Launched default mail client', 'info');
+  // Keep modal inputs synced with the Gmail link
+  ['draftRecipient', 'draftSubject', 'draftBody'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', () => {
+        const recipient = (document.getElementById('draftRecipient').value || '').trim();
+        const subject = (document.getElementById('draftSubject').value || '').trim();
+        const body = (document.getElementById('draftBody').value || '').trim();
+        if (btnOpenGmail) {
+          btnOpenGmail.href = EmailDraftManager.getGmailComposeUrl({ recipient, subject, body });
+        }
+      });
+    }
   });
 
   document.getElementById('btnCopyRecipient').addEventListener('click', async () => {
@@ -768,6 +783,12 @@ function handleOpenEmailDraftModal() {
   document.getElementById('draftSubject').value = draft.subject;
   document.getElementById('draftBody').value = draft.body;
   document.getElementById('modalFilenameDisplay').textContent = draft.filename;
+
+  // Pre-set the direct Gmail compose URL on the link so it opens reliably
+  const btnOpenGmail = document.getElementById('btnOpenGmail');
+  if (btnOpenGmail) {
+    btnOpenGmail.href = EmailDraftManager.getGmailComposeUrl(draft);
+  }
 
   openModal('emailDraftModal');
 }

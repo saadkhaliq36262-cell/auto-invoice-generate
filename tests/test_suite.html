@@ -158,6 +158,10 @@
     assert('Email Draft: Body contains Due Date: 2026-09-28', draft.body.includes('Due Date: 2026-09-28'), `Body was: ${draft.body}`);
     assert('Email Draft: Body contains Thank you and Best regards', draft.body.includes('Thank you for your business.') && draft.body.includes('Best regards,\nNova Solutions'), `Body was: ${draft.body}`);
 
+    const gmailUrl = EmailDraftManager.getGmailComposeUrl(draft);
+    assert('Gmail URL: Uses official mail.google.com compose endpoint', gmailUrl.startsWith('https://mail.google.com/mail/?view=cm&fs=1'));
+    assert('Gmail URL: Pre-fills recipient, subject and full draft body', gmailUrl.includes('to=ali.khan%40example.com') && gmailUrl.includes('su=Invoice%20INV-0001%20-%20Nova%20Solutions') && gmailUrl.includes('body=Dear%20Ali%20Khan'));
+
     // --- TEST 4: Raw Text Parser ---
     const sampleRaw = `
       Company: Apex Innovations

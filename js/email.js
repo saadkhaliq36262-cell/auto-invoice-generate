@@ -25,16 +25,32 @@ class EmailDraftManager {
   }
 
   /**
-   * Opens Gmail Web Compose in a new browser tab with prefilled fields
+   * Generates direct Gmail Web compose URL with pre-filled fields
    * @param {Object} draft - { recipient, subject, body }
+   * @returns {string}
    */
-  static openGmailCompose(draft) {
+  static getGmailComposeUrl(draft) {
     const to = encodeURIComponent(draft.recipient || '');
     const su = encodeURIComponent(draft.subject || '');
     const body = encodeURIComponent(draft.body || '');
 
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${su}&body=${body}`;
-    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+    return `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${su}&body=${body}`;
+  }
+
+  /**
+   * Opens Gmail Web Compose in a new browser tab with prefilled fields
+   * @param {Object} draft - { recipient, subject, body }
+   */
+  static openGmailCompose(draft) {
+    const gmailUrl = this.getGmailComposeUrl(draft);
+
+    // Open without 'noreferrer' so Google maintains active login session
+    const win = window.open(gmailUrl, '_blank', 'noopener');
+    if (!win || win.closed || typeof win.closed === 'undefined') {
+      // Fallback navigation if popup blocker intercepted window.open
+      window.location.href = gmailUrl;
+    }
+    return gmailUrl;
   }
 
   /**

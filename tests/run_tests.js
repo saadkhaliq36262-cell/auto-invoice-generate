@@ -105,6 +105,12 @@ Nova Solutions`;
 
 assert('Email Draft: Body matches exact requested format', draft.body.trim() === expectedBody.trim(), `Diff:\nGot:\n${draft.body}\nExpected:\n${expectedBody}`);
 
+const gmailUrl = EmailDraftManager.getGmailComposeUrl(draft);
+assert('Gmail URL: Uses official mail.google.com compose endpoint', gmailUrl.startsWith('https://mail.google.com/mail/?view=cm&fs=1'));
+assert('Gmail URL: Pre-fills recipient email', gmailUrl.includes('to=ali.khan%40example.com'));
+assert('Gmail URL: Pre-fills subject', gmailUrl.includes('su=Invoice%20INV-0001%20-%20Nova%20Solutions'));
+assert('Gmail URL: Pre-fills entire formatted draft body', gmailUrl.includes('body=Dear%20Ali%20Khan'));
+
 // 4. Raw Text Parser Advanced Test Cases
 // Case A: Pipe delimited format
 const raw1 = `
