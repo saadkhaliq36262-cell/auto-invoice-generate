@@ -1,0 +1,33 @@
+{
+  "name": "invoice-generator",
+  "version": "1.0.0",
+  "description": "AutoInvoice Pro is a complete, standalone, client-side web application for rapid invoice generation, real-time live preview, high-resolution A4 PDF downloads, and prepared email drafting.",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node tests/platform_tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saadkhaliq36262-cell/auto-invoice-generate.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saadkhaliq36262-cell/auto-invoice-generate/issues"
+  },
+  "homepage": "https://github.com/saadkhaliq36262-cell/auto-invoice-generate#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "imapflow": "^2.10.0",
+    "mailparser": "^3.14.1",
+    "multer": "^2.5.0",
+    "nodemailer": "^10.3.1",
+    "pdf-lib": "^1.17.1",
+    "uuid": "^14.0.3"
+  }
+}

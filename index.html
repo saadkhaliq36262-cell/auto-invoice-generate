@@ -3,586 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Automated Invoice Generator - Professional A4 Invoicing</title>
+  <title>AutoInvoice Pro — Multi-Company Invoicing SaaS Platform</title>
+  
+  <!-- Modern Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="css/style.css">
-  <!-- Bundled html2pdf library -->
+
+  <!-- PDF Rendering Library -->
   <script src="libs/html2pdf.bundle.min.js"></script>
 </head>
-<body data-theme="blue">
+<body class="saas-body">
 
-  <!-- Header Navigation -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="brand">
-        <div class="brand-icon">🧾</div>
-        <div>
-          <h1 class="brand-title">AutoInvoice Pro</h1>
-          <p class="brand-subtitle">Automated Invoice Generator &amp; Email Drafter</p>
-        </div>
-        <div id="demoBadge" class="demo-pill" title="Free demo limit">
-          <span class="demo-pill-dot"></span>
-          <span id="demoBadgeText">Free Demo — 2 Invoices</span>
-        </div>
-      </div>
-
-      <div class="header-actions">
-        <!-- History Trigger -->
-        <button id="btnOpenHistory" class="btn btn-secondary" title="View Saved Invoices">
-          📂 Invoices <span id="historyCountBadge" class="badge badge-count">0</span>
-        </button>
-
-        <!-- New / Reset -->
-        <button id="btnNewInvoice" class="btn btn-secondary" title="Create New Invoice">
-          ➕ New
-        </button>
-
-        <!-- Print -->
-        <button id="btnPrintInvoice" class="btn btn-secondary" title="Print Invoice">
-          🖨️ Print
-        </button>
-
-        <!-- Primary Actions -->
-        <button id="btnDownloadPDF" class="btn btn-primary" title="Download Formatted A4 PDF">
-          📥 Download PDF
-        </button>
-
-        <button id="btnCreateEmailDraft" class="btn btn-accent" title="Generate Email Draft">
-          ✉️ Create Email Draft
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Container -->
-  <main class="app-container">
-
-    <!-- Left Column: Invoice Form & Raw Input -->
-    <section class="editor-panel">
-
-      <!-- 1. Quick Raw Data Input / Smart Parser -->
-      <div class="card raw-input-card">
-        <div class="card-header">
-          <span class="card-header-title">⚡ Quick Paste / Raw Text Parser</span>
-          <button id="btnToggleRawHelp" class="btn btn-ghost btn-sm" title="Show/Hide Quick Templates">Presets</button>
-        </div>
-        <div class="card-body">
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-            Paste messy invoice notes, bullet points, or customer order text below to auto-fill the entire invoice:
-          </p>
-          <textarea id="rawTextInput" class="raw-textarea" placeholder="Example:
-Customer: Ali Khan (ali.khan@example.com)
-Address: 456 Innovation Way, Seattle WA
-Items:
-- Full-Stack Web Development | 1 | $3500
-- Cloud Deployment | 1 | $850
-- Support Retainer | 2 | $300
-Discount: $200
-Tax: 10%
-Due in 14 days"></textarea>
-          
-          <div class="sample-pills">
-            <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Quick Presets:</span>
-            <button class="pill-btn" data-preset="freelance">Freelance Web Dev</button>
-            <button class="pill-btn" data-preset="agency">Creative Agency</button>
-            <button class="pill-btn" data-preset="consulting">IT Consulting</button>
-            <button class="pill-btn" data-preset="product">Hardware / Product</button>
-          </div>
-
-          <div style="margin-top: 0.75rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
-            <button id="btnClearRawText" class="btn btn-ghost btn-sm">Clear Text</button>
-            <button id="btnParseRawText" class="btn btn-primary btn-sm">✨ Parse &amp; Populate Form</button>
-          </div>
+  <!-- Main Multi-Company SaaS Wrapper -->
+  <div class="saas-wrapper">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="saas-sidebar">
+      
+      <!-- App Brand Header -->
+      <div class="sidebar-brand">
+        <div class="brand-logo-icon">⚡</div>
+        <div class="brand-text">
+          <div class="brand-name">AutoInvoice Pro</div>
+          <div class="brand-tagline">Multi-Company SaaS</div>
         </div>
       </div>
 
-      <!-- 2. Company / Sender Information -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-header-title">🏢 Company &amp; Sender Details</span>
-          <button id="btnSaveCompanyDefault" class="btn btn-ghost btn-sm" title="Save this company info as default for future invoices">💾 Set Default</button>
-        </div>
-        <div class="card-body">
-          <!-- Logo Upload -->
-          <div class="logo-upload-wrapper">
-            <div class="logo-preview-box" id="logoPreviewBox">
-              <span class="logo-placeholder" id="logoPlaceholder">No Logo</span>
-              <img id="logoPreviewImg" class="logo-preview-img" style="display: none;" alt="Company Logo">
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-              <div style="display: flex; gap: 0.4rem;">
-                <label for="logoFileInput" class="btn btn-secondary btn-sm" style="cursor: pointer;">
-                  📷 Upload Logo
-                </label>
-                <input type="file" id="logoFileInput" accept="image/*" style="display: none;">
-                <button id="btnSampleLogo" class="btn btn-ghost btn-sm">Use Sample</button>
-                <button id="btnRemoveLogo" class="btn btn-danger-ghost btn-sm" style="display: none;">Remove</button>
-              </div>
-              <span class="form-label-hint">PNG, JPG, SVG up to 2MB.</span>
-            </div>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label" for="companyName">Company / Business Name *</label>
-              <input type="text" id="companyName" class="form-input" placeholder="e.g. Acme Solutions Inc.">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="companyEmail">Company Email *</label>
-              <input type="email" id="companyEmail" class="form-input" placeholder="billing@acme.com">
-            </div>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label" for="companyPhone">Phone Number</label>
-              <input type="text" id="companyPhone" class="form-input" placeholder="+1 (555) 019-2834">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="companyTaxId">Tax ID / VAT / Reg No</label>
-              <input type="text" id="companyTaxId" class="form-input" placeholder="e.g. TAX-US-98765432">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="companyAddress">Company Address</label>
-            <textarea id="companyAddress" class="form-textarea" rows="2" placeholder="Street Address, City, State, ZIP"></textarea>
-          </div>
-        </div>
+      <!-- Company Selector Dropdown -->
+      <div class="sidebar-company-section" id="sidebarCompanySelector">
+        <!-- Injected dynamically by js/components/companySelector.js -->
       </div>
 
-      <!-- 3. Customer / Client Information -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-header-title">👤 Customer / Client Details</span>
-        </div>
-        <div class="card-body">
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label" for="customerName">Customer Name *</label>
-              <input type="text" id="customerName" class="form-input" placeholder="e.g. Ali Khan">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="customerEmail">Customer Email *</label>
-              <input type="email" id="customerEmail" class="form-input" placeholder="ali.khan@example.com">
-            </div>
-          </div>
-
-          <div class="form-grid-2">
-            <div class="form-group">
-              <label class="form-label" for="customerPhone">Phone Number</label>
-              <input type="text" id="customerPhone" class="form-input" placeholder="+1 (555) 987-6543">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="customerId">Client ID / PO Ref</label>
-              <input type="text" id="customerId" class="form-input" placeholder="CUST-001 or PO-980">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="customerAddress">Billing Address</label>
-            <textarea id="customerAddress" class="form-textarea" rows="2" placeholder="Client Street, City, State, Country"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4. Invoice Metadata -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-header-title">📋 Invoice Information</span>
-        </div>
-        <div class="card-body">
-          <div class="form-grid-3">
-            <div class="form-group">
-              <label class="form-label" for="invoiceNumber">Invoice Number *</label>
-              <input type="text" id="invoiceNumber" class="form-input" placeholder="INV-0001">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="invoiceDate">Invoice Date *</label>
-              <input type="date" id="invoiceDate" class="form-input">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="dueDate">Due Date *</label>
-              <input type="date" id="dueDate" class="form-input">
-            </div>
-          </div>
-
-          <div class="form-grid-3">
-            <div class="form-group">
-              <label class="form-label" for="paymentStatus">Payment Status</label>
-              <select id="paymentStatus" class="form-select">
-                <option value="Pending">Pending</option>
-                <option value="Paid">Paid</option>
-                <option value="Overdue">Overdue</option>
-                <option value="Draft">Draft</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="paymentTerms">Payment Terms</label>
-              <select id="paymentTerms" class="form-select">
-                <option value="Due on Receipt">Due on Receipt</option>
-                <option value="Net 7">Net 7 Days</option>
-                <option value="Net 14">Net 14 Days</option>
-                <option value="Net 30">Net 30 Days</option>
-                <option value="Net 60">Net 60 Days</option>
-                <option value="Custom">Custom</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="currencySelect">Currency</label>
-              <select id="currencySelect" class="form-select">
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="GBP">GBP (£)</option>
-                <option value="CAD">CAD (CA$)</option>
-                <option value="AUD">AUD (AU$)</option>
-                <option value="PKR">PKR (Rs)</option>
-                <option value="INR">INR (₹)</option>
-                <option value="AED">AED (AED)</option>
-                <option value="SAR">SAR (SAR)</option>
-                <option value="JPY">JPY (¥)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 5. Line Items -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-header-title">🛒 Line Items / Services</span>
-          <button id="btnAddItem" class="btn btn-primary btn-sm">➕ Add Item</button>
-        </div>
-        <div class="card-body">
-          <div class="item-row-header">
-            <span>Description</span>
-            <span>Qty</span>
-            <span>Unit Price</span>
-            <span>Tax %</span>
-            <span></span>
-          </div>
-          <div id="itemsContainer" class="items-list">
-            <!-- Dynamic Item Rows Injected via JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- 6. Taxes, Discounts & Totals Settings -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-header-title">🏷️ Discounts &amp; Taxes</span>
-        </div>
-        <div class="card-body">
-          <div class="form-grid-3">
-            <div class="form-group">
-              <label class="form-label" for="discountValue">Discount</label>
-              <div style="display: flex; gap: 0.35rem;">
-                <input type="number" id="discountValue" class="form-input" min="0" step="any" value="200">
-                <select id="discountType" class="form-select" style="width: 85px;">
-                  <option value="fixed">Fixed</option>
-                  <option value="percentage">%</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="taxRate">Tax / VAT Rate (%)</label>
-              <input type="number" id="taxRate" class="form-input" min="0" max="100" step="any" value="10">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="shippingFee">Shipping / Other</label>
-              <input type="number" id="shippingFee" class="form-input" min="0" step="any" value="0">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 7. Notes & Payment Details -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-header-title">📝 Payment Instructions &amp; Notes</span>
-        </div>
-        <div class="card-body">
-          <div class="form-group">
-            <label class="form-label" for="paymentDetails">Bank &amp; Payment Details</label>
-            <textarea id="paymentDetails" class="form-textarea" rows="2" placeholder="Bank Name, IBAN, Account #, SWIFT/BIC or PayPal ID"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="invoiceNotes">Notes / Terms to Customer</label>
-            <textarea id="invoiceNotes" class="form-textarea" rows="2" placeholder="Payment due within 14 days. Thank you for your business."></textarea>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- Right Column: Live A4 Document Preview -->
-    <section class="preview-panel">
-      <!-- Preview Toolbar -->
-      <div class="preview-toolbar">
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Theme:</span>
-          <div class="theme-picker">
-            <div class="theme-dot blue active" data-theme-name="blue" title="Corporate Navy"></div>
-            <div class="theme-dot emerald" data-theme-name="emerald" title="Modern Emerald"></div>
-            <div class="theme-dot slate" data-theme-name="slate" title="Corporate Slate"></div>
-            <div class="theme-dot violet" data-theme-name="violet" title="Royal Violet"></div>
-            <div class="theme-dot crimson" data-theme-name="crimson" title="Crimson Red"></div>
-          </div>
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <span id="previewFilenameDisplay" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--text-muted);">Invoice-INV-0001-Ali-Khan.pdf</span>
-        </div>
-      </div>
-
-      <!-- A4 Sheet Container -->
-      <div class="preview-viewport">
-        <div id="invoicePreviewCanvas" class="a4-sheet">
-
-          <!-- Top Invoice Header -->
-          <div class="inv-header">
-            <div class="inv-company-brand">
-              <img id="previewLogo" class="inv-company-logo" style="display: none;" alt="Logo">
-              <div>
-                <div id="previewCompanyName" class="inv-company-name">Acme Solutions Inc.</div>
-                <div id="previewCompanyDetails" class="inv-company-details">
-                  742 Evergreen Terrace, Suite 100, Springfield, OR 97477
-                  billing@acmesolutions.com | +1 (555) 234-5678
-                  Tax ID: TAX-US-98765432
-                </div>
-              </div>
-            </div>
-
-            <div class="inv-title-block">
-              <div class="inv-title">INVOICE</div>
-              <div id="previewInvoiceNumber" class="inv-number">INV-0001</div>
-              <span id="previewStatusBadge" class="inv-status-pill Pending">Pending</span>
-            </div>
-          </div>
-
-          <!-- Billed To & Metadata Bar -->
-          <div class="inv-info-bar">
-            <div>
-              <div class="inv-block-title">Billed To</div>
-              <div id="previewCustomerName" class="inv-client-name">Ali Khan</div>
-              <div id="previewCustomerDetails" class="inv-client-details">
-                ali.khan@example.com
-                +1 (555) 987-6543
-                456 Innovation Way, Tech Park, Seattle, WA 98101
-              </div>
-            </div>
-
-            <div class="inv-meta-grid">
-              <div class="inv-meta-item">
-                <span class="inv-meta-label">Invoice Date</span>
-                <span id="previewInvoiceDate" class="inv-meta-value">2026-09-14</span>
-              </div>
-              <div class="inv-meta-item">
-                <span class="inv-meta-label">Due Date</span>
-                <span id="previewDueDate" class="inv-meta-value">2026-09-28</span>
-              </div>
-              <div class="inv-meta-item">
-                <span class="inv-meta-label">Payment Terms</span>
-                <span id="previewPaymentTerms" class="inv-meta-value">Net 14</span>
-              </div>
-              <div class="inv-meta-item">
-                <span class="inv-meta-label">Currency</span>
-                <span id="previewCurrency" class="inv-meta-value">USD ($)</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Table of Items -->
-          <div class="inv-table-wrapper">
-            <table class="inv-table">
-              <thead>
-                <tr>
-                  <th style="width: 48%;">Description</th>
-                  <th class="text-center" style="width: 12%;">Qty</th>
-                  <th class="text-right" style="width: 20%;">Unit Price</th>
-                  <th class="text-right" style="width: 20%;">Amount</th>
-                </tr>
-              </thead>
-              <tbody id="previewTableBody">
-                <!-- Dynamically populated rows -->
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Summary & Totals -->
-          <div class="inv-summary-section">
-            <div class="inv-terms-box">
-              <h4>Payment Instructions</h4>
-              <p id="previewPaymentDetails">Bank Name: Silicon Valley Bank
-Account Name: Acme Solutions Inc.
-Account No: 9876-5432-1098
-Routing / SWIFT: SVBUS6SXXX</p>
-
-              <h4 style="margin-top: 0.6rem;">Notes</h4>
-              <p id="previewNotes">Payment is due within 14 days of invoice date. Thank you for your business!</p>
-            </div>
-
-            <div class="inv-totals-box">
-              <div class="inv-total-row">
-                <span>Subtotal:</span>
-                <span id="previewSubtotal" class="amount">$4,950.00</span>
-              </div>
-              <div class="inv-total-row" id="previewDiscountRow">
-                <span>Discount:</span>
-                <span id="previewDiscount" class="amount">-$200.00</span>
-              </div>
-              <div class="inv-total-row" id="previewTaxRow">
-                <span id="previewTaxLabel">Tax (10%):</span>
-                <span id="previewTax" class="amount">+$475.00</span>
-              </div>
-              <div class="inv-total-row" id="previewShippingRow" style="display: none;">
-                <span>Shipping:</span>
-                <span id="previewShipping" class="amount">$0.00</span>
-              </div>
-              <div class="inv-total-row grand-total">
-                <span>Total Due:</span>
-                <span id="previewGrandTotal" class="amount">$5,225.00</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Professional Footer -->
-          <div class="inv-footer">
-            <div class="inv-footer-thankyou">Thank you for your business!</div>
-            <div id="previewFooterContact">Questions? Contact billing@acmesolutions.com</div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ========================================================================
-       MODAL 1: Email Draft Modal
-       ======================================================================== -->
-  <div id="emailDraftModal" class="modal-backdrop">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <span class="modal-title">✉️ Prepared Email Draft</span>
-        <button class="btn btn-ghost btn-sm close-modal-btn" data-modal="emailDraftModal">✕</button>
-      </div>
-      <div class="modal-body">
+      <!-- Primary Navigation Links -->
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-group-title">MAIN MENU</div>
         
-        <!-- Step 2 Notice -->
-        <div class="notice-banner">
-          <span class="notice-icon">📎</span>
-          <div>
-            <strong>Manual Attachment Required:</strong>
-            <p style="margin-top: 0.2rem;">
-              Click <strong>"Open in Gmail"</strong> below to create your pre-filled draft directly in Gmail. Remember to manually attach your downloaded PDF (<code id="modalFilenameDisplay">Invoice-INV-0001-Ali-Khan.pdf</code>) before sending.
-            </p>
+        <a href="#dashboard" class="sidebar-nav-item active">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <a href="#invoices" class="sidebar-nav-item">
+          <span class="nav-icon">📄</span>
+          <span class="nav-label">Invoices</span>
+        </a>
+
+        <a href="#clients" class="sidebar-nav-item">
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Clients</span>
+        </a>
+
+        <a href="#templates" class="sidebar-nav-item">
+          <span class="nav-icon">🎨</span>
+          <span class="nav-label">Templates</span>
+        </a>
+
+        <a href="#mail" class="sidebar-nav-item">
+          <span class="nav-icon">✉️</span>
+          <span class="nav-label">Mail &amp; Replies</span>
+        </a>
+
+        <a href="#referrals" class="sidebar-nav-item">
+          <span class="nav-icon">🎁</span>
+          <span class="nav-label">Referrals</span>
+        </a>
+
+        <div class="sidebar-nav-group-title mt-3">CONFIGURATION</div>
+
+        <a href="#settings" class="sidebar-nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Settings</span>
+        </a>
+
+        <a href="#settings?tab=mcp" class="sidebar-nav-item mcp-nav-item">
+          <span class="nav-icon">📡</span>
+          <span class="nav-label">MCP Protocol</span>
+          <span class="badge badge-accent-xs">35</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer / Active Profile -->
+      <div class="sidebar-footer">
+        <div class="user-profile-widget">
+          <div class="user-avatar">SK</div>
+          <div class="user-details">
+            <div class="user-name">Saad Khaliq</div>
+            <div class="user-role">Platform Owner</div>
+          </div>
+        </div>
+        <div class="mcp-live-pill" onclick="window.location.hash='#settings?tab=mcp'">
+          <span class="mcp-dot"></span>
+          <span>MCP Live at /mcp</span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="saas-main">
+      
+      <!-- Top Bar -->
+      <header class="saas-top-header">
+        <div class="top-header-left">
+          <div class="top-search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="globalTopSearch" class="top-search-input" placeholder="Search invoices, clients, or templates... (Press Ctrl+K)" />
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="draftRecipient">
-            Recipient (Customer Email)
-            <button class="btn btn-ghost btn-sm" id="btnCopyRecipient">Copy</button>
-          </label>
-          <input type="email" id="draftRecipient" class="form-input" readonly>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="draftSubject">
-            Subject
-            <button class="btn btn-ghost btn-sm" id="btnCopySubject">Copy</button>
-          </label>
-          <input type="text" id="draftSubject" class="form-input" readonly>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="draftBody">
-            Email Body
-            <button class="btn btn-ghost btn-sm" id="btnCopyBody">Copy Body</button>
-          </label>
-          <textarea id="draftBody" class="form-textarea" rows="9" readonly style="font-family: var(--font-mono); font-size: 0.85rem;"></textarea>
-        </div>
-
-      </div>
-      <div class="modal-footer" style="justify-content: space-between;">
-        <button id="btnCopyFullEmail" class="btn btn-secondary">📋 Copy Full Draft</button>
-        <div style="display: flex; gap: 0.5rem;">
-          <a id="btnOpenGmail" href="#" target="_blank" rel="noopener" class="btn btn-gmail" title="Open and create pre-filled email draft in Gmail">
-            📧 Open in Gmail (Create Full Draft)
+        <div class="top-header-right">
+          <div class="demo-badge-wrap" title="Admin Unlimited Mode">
+            <span class="badge badge-success text-xs">👑 Unlimited Developer Access</span>
+          </div>
+          
+          <a href="#invoices/new" class="btn btn-primary btn-sm">
+            ➕ New Invoice
           </a>
         </div>
-      </div>
+      </header>
+
+      <!-- SPA Dynamic View Container -->
+      <main class="main-content" id="appView">
+        <div class="view-loading">
+          <div class="spinner"></div>
+          <p>Loading AutoInvoice Pro...</p>
+        </div>
+      </main>
+
     </div>
+
   </div>
 
-  <!-- ========================================================================
-       MODAL 2: Invoice History Modal
-       ======================================================================== -->
-  <div id="historyModal" class="modal-backdrop">
-    <div class="modal-dialog" style="max-width: 750px;">
-      <div class="modal-header">
-        <span class="modal-title">📂 Saved Invoice History</span>
-        <button class="btn btn-ghost btn-sm close-modal-btn" data-modal="historyModal">✕</button>
-      </div>
-      <div class="modal-body">
-        <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem;">
-          <input type="text" id="historySearchInput" class="form-input" placeholder="Search by customer name or invoice number...">
-        </div>
-        <div id="historyListContainer" style="display: flex; flex-direction: column; gap: 0.6rem; max-height: 400px; overflow-y: auto;">
-          <!-- Dynamically populated saved invoices -->
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary close-modal-btn" data-modal="historyModal">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================================================
-       MODAL 3: Demo Limit Reached Modal
-       ======================================================================== -->
-  <div id="demoLimitModal" class="modal-backdrop">
-    <div class="modal-dialog" style="max-width: 520px; text-align: center;">
-      <div class="modal-header" style="justify-content: flex-end; border-bottom: none; padding-bottom: 0;">
-        <button class="btn btn-ghost btn-sm close-modal-btn" data-modal="demoLimitModal">✕</button>
-      </div>
-      <div class="modal-body" style="padding: 0.5rem 2rem 2.25rem;">
-        <div class="demo-limit-icon">✨</div>
-        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.85rem; line-height: 1.3;">
-          You've reached the 2-invoice demo limit.
-        </h2>
-        <p style="font-size: 1.05rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.35rem;">
-          Want your own customized invoice system?
-        </p>
-        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.75rem;">
-          Contact me for a custom version.
-        </p>
-
-        <div style="display: flex; flex-direction: column; gap: 0.75rem; align-items: center;">
-          <a id="btnFiverrCTA" href="https://www.fiverr.com/saadkhaliq36262" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-fiverr-cta" style="width: 100%; max-width: 320px; padding: 0.85rem 1.25rem;">
-            🚀 Get Custom Invoice System
-          </a>
-          <button class="btn btn-ghost btn-sm close-modal-btn" data-modal="demoLimitModal" style="margin-top: 0.25rem;">
-            Continue Previewing
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast Notification Container -->
+  <!-- Global Toast Notifications -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <!-- Application Logic Scripts -->
-  <script src="js/demo.js"></script>
-  <script src="js/parser.js"></script>
-  <script src="js/invoice.js"></script>
-  <script src="js/pdf.js"></script>
-  <script src="js/email.js"></script>
-  <script src="js/storage.js"></script>
+  <!-- Application Modules -->
+  <script src="js/api.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/components/companySelector.js"></script>
+  <script src="js/components/assistant.js"></script>
+  <script src="js/views/dashboard.js"></script>
+  <script src="js/views/invoices.js"></script>
+  <script src="js/views/invoiceForm.js"></script>
+  <script src="js/views/emailComposer.js"></script>
+  <script src="js/views/templates.js"></script>
+  <script src="js/views/designer.js"></script>
+  <script src="js/views/pdfUpload.js"></script>
+  <script src="js/views/clients.js"></script>
+  <script src="js/views/mail.js"></script>
+  <script src="js/views/referrals.js"></script>
+  <script src="js/views/settings.js"></script>
+  <script src="js/router.js"></script>
   <script src="js/app.js"></script>
+
 </body>
 </html>

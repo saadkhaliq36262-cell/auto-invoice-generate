@@ -6,6 +6,8 @@ desktop.ini
 # Node / Scratch
 node_modules/
 *.log
+*.db
+server/uploads/
 
 # Editor Directories
 .vscode/
